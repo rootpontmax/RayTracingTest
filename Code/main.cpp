@@ -10,6 +10,8 @@
 #include <fstream>
 #include <vector>
 #include <cfloat>
+#include <chrono>
+
 
 #include "../Code/Core/Assert.h"
 #include "../Code/Core/Color.h"
@@ -118,9 +120,13 @@ int main(int argc, const char * argv[])
     const Vec3 lowerLeftCorner = camPos - screenVecX * 0.5f - screenVecY * 0.5f - Vec3( 0.0f, 0.0f, focaLlength );
     
     // Render
-    MakeTestGradient( buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
+    //MakeTestGradient( buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
     const float fullX = static_cast< float >( SCREEN_SIZE_X - 1 );
     const float fullY = static_cast< float >( SCREEN_SIZE_Y - 1 );
+    
+    std::cout << "Creating image\n";
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    
     for( int y = ( SCREEN_SIZE_Y - 1 ); y >= 0; --y )
         for( int x = 0; x < SCREEN_SIZE_X; ++x )
         {
@@ -135,9 +141,9 @@ int main(int argc, const char * argv[])
             buffer.get()[offset+1] = col.GetByteG();
             buffer.get()[offset+2] = col.GetByteB();
         }
-    
-    std::cout << "Creating image\n";
-    
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float, std::milli> duration = t2 - t1;
+    std::cout << "Buffer created for " << duration.count() << " ms" << std::endl;
     
     WriteToPPM( "RayTest.ppm", buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
     
