@@ -1,0 +1,137 @@
+#include "Color.h"
+#include "Assert.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor::SColor() :
+    r( 0.0f ),
+    g( 0.0f ),
+    b( 0.0f ),
+    a( 0.0f )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor::SColor( const SColor& rhs ) :
+    r( rhs.r ),
+    g( rhs.g ),
+    b( rhs.b ),
+    a( rhs.a )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor::SColor( float _r, float _g, float _b, float _a ) :
+    r( _r ),
+    g( _g ),
+    b( _b ),
+    a( _a )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor::SColor( int _r, int _g, int _b, int _a ) :
+    r( static_cast< float >( _r & 0x000000FF ) / 255.0f ),
+    g( static_cast< float >( _g & 0x000000FF ) / 255.0f ),
+    b( static_cast< float >( _b & 0x000000FF ) / 255.0f ),
+    a( static_cast< float >( _a & 0x000000FF ) / 255.0f )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor& SColor::operator+=( const SColor& rhs )
+{
+    r += rhs.r;
+    g += rhs.g;
+    b += rhs.b;
+    a += rhs.a;
+    return *this;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor& SColor::operator*=( float rhs )
+{
+    r *= rhs;
+    g *= rhs;
+    b *= rhs;
+    a *= rhs;
+    return *this;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor& SColor::operator/=( float rhs )
+{
+    r /= rhs;
+    g /= rhs;
+    b /= rhs;
+    a /= rhs;
+    return *this;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t SColor::GetByteR() const
+{
+    return static_cast< uint8_t >( r * 255.0f );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t SColor::GetByteG() const
+{
+    return static_cast< uint8_t >( g * 255.0f );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t SColor::GetByteB() const
+{
+    return static_cast< uint8_t >( b * 255.0f );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t SColor::GetByteA() const
+{
+    return static_cast< uint8_t >( a * 255.0f );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor operator+( const SColor& lhs, const SColor& rhs )
+{   
+    const float r = lhs.r + rhs.r;
+    const float g = lhs.g + rhs.g;
+    const float b = lhs.b + rhs.b;
+    const float a = lhs.a + rhs.a;
+    return SColor( r, g, b, a );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor operator*( const SColor& lhs, float rhs )
+{
+    SColor col = lhs;
+    col *= rhs;
+    return col;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor operator*( float lhs, const SColor& rhs )
+{
+    SColor col = rhs;
+    col *= lhs;
+    return col;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor operator*( const SColor& lhs, const SColor& rhs )
+{
+    const float r = lhs.r * rhs.r;
+    const float g = lhs.g * rhs.g;
+    const float b = lhs.b * rhs.b;
+    const float a = lhs.a * rhs.a;
+    return SColor( r, g, b, a );
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor operator/( const SColor& lhs, float rhs )
+{
+    SColor col = lhs;
+    col /= rhs;
+    return col;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+SColor LerpColor( const SColor& from, const SColor& to, const float coef )
+{
+    ASSERT( coef >= 0 && coef <= 1.0f, "Wrong coef" );
+    
+    const float deltaR = to.r - from.r;
+    const float deltaG = to.g - from.g;
+    const float deltaB = to.b - from.b;
+    const float deltaA = to.a - from.a;
+    
+    SColor ret;
+    
+    ret.r = from.r + deltaR * coef;
+    ret.g = from.g + deltaG * coef;
+    ret.b = from.b + deltaB * coef;
+    ret.a = from.a + deltaA * coef;
+    
+    return ret;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
