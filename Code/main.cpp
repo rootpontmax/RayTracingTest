@@ -15,13 +15,37 @@
 
 #include "../Code/Core/Assert.h"
 #include "../Code/Core/Color.h"
+#include "../Code/Core/ThreadPool.h"
+
 #include "../Code/RayTrace/Sphere.h"
 #include "../Code/RayTrace/Ray.h"
+#include "../Code/RayTrace/Camera.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+static const int SCREEN_CELL_SIZE = 64;
 static const int SCREEN_SIZE_X = 640;
 static const int SCREEN_SIZE_Y = 480;
+static const int SCREEN_CELL_COUNT_X = SCREEN_SIZE_X / SCREEN_CELL_SIZE;
+static const int SCREEN_CELL_COUNT_Y = SCREEN_SIZE_Y / SCREEN_CELL_SIZE;
 static const float SCREEN_ASPECT = static_cast< float >( SCREEN_SIZE_X ) / static_cast< float >( SCREEN_SIZE_Y );
+typedef std::vector< const NRayTrace::IHitable* > TScene;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+struct STaskData
+{
+    STaskData( const NRayTrace::CCamera& cam, const TScene& scn, uint8_t *pBuf, int x, int y ) :
+        camera( cam ),
+        scene( scn ),
+        pBuffer( pBuf ),
+        startX( x ),
+        startY( y )
+    {}
+    
+    const NRayTrace::CCamera& camera;
+    const TScene& scene;
+    uint8_t* const pBuffer;
+    const int startX;
+    const int startY;
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static void MakeTestGradient( uint8_t *pBuffer, const int sizeX, const int sizeY )
 {
@@ -96,8 +120,37 @@ SColor GetSceneColor( const NRayTrace::SRay& ray, const std::vector< const NRayT
     return SColor( 0.0f, 0.0f, 0.0f, 1.0f );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+static void ThreadFunc( const size_t threadID, STaskData data )
+{
+    const float fullX = static_cast< float >( SCREEN_SIZE_X - 1 );
+    const float fullY = static_cast< float >( SCREEN_SIZE_Y - 1 );
+    
+    for( int y = 0; y < SCREEN_CELL_SIZE; ++y )
+        for( int x = 0; x < SCREEN_CELL_SIZE; ++x )
+        {
+            const int bufferX = data.startX + x;
+            const int bufferY = data.startY + y;
+            
+            ASSERT( bufferX >= 0 && bufferX < SCREEN_SIZE_X, "Wrong bufferX" );
+            ASSERT( bufferY >= 0 && bufferY < SCREEN_SIZE_Y, "Wrong bufferY" );
+            
+            const float u = static_cast< float >( bufferX ) / fullX;
+            const float v = static_cast< float >( bufferY ) / fullY;
+            const NRayTrace::SRay ray = data.camera.GetRay( u, v );
+            const SColor col = GetSceneColor( ray, data.scene );
+            
+            const int offset = ( bufferY * SCREEN_SIZE_X + bufferX ) * 3;
+            data.pBuffer[offset  ] = col.GetByteR();
+            data.pBuffer[offset+1] = col.GetByteG();
+            data.pBuffer[offset+2] = col.GetByteB();
+        }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, const char * argv[])
 {
+    // Thread pool
+    NCore::CThreadPool threadPool( std::thread::hardware_concurrency() );
+    
     // Buffer
     std::unique_ptr< uint8_t[] >buffer( new uint8_t[SCREEN_SIZE_X * SCREEN_SIZE_Y * 3] );
     
@@ -110,15 +163,35 @@ int main(int argc, const char * argv[])
     scene.push_back( &sphereB );
     
     // Camera
-    const float viewPortSizeY = 2.0f;
-    const float viewPortSizeX = viewPortSizeY * SCREEN_ASPECT;
-    const float focaLlength = 1.0f;
+    NRayTrace::CCamera camera( SCREEN_ASPECT, 1.0f );
     
-    const Vec3 camPos = Vec3( 0.0f, 0.0f, 0.0f );
-    const Vec3 screenVecX = Vec3( viewPortSizeX, 0.0f, 0.0f );
-    const Vec3 screenVecY = Vec3( 0.0f, viewPortSizeY, 0.0f );
-    const Vec3 lowerLeftCorner = camPos - screenVecX * 0.5f - screenVecY * 0.5f - Vec3( 0.0f, 0.0f, focaLlength );
+    // Tasks
+    const int cellCount = SCREEN_CELL_COUNT_X * SCREEN_CELL_COUNT_Y;
+    std::vector< STaskData > datas;
+    datas.reserve( cellCount );
+    for( int y = 0; y < SCREEN_SIZE_Y; y += SCREEN_CELL_SIZE )
+        for( int x = 0; x < SCREEN_SIZE_X; x += SCREEN_CELL_SIZE )
+        {
+            STaskData data( camera, scene, buffer.get(), x, y );
+            datas.emplace_back( data );
+        }
     
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    for( int i = 0; i < cellCount; ++i )
+        threadPool.Add( &ThreadFunc, datas[i] );
+    /*
+    for( int y = ( SCREEN_SIZE_Y - 1 ); y >= 0; y -= SCREEN_CELL_SIZE )
+        for( int x = 0; x < SCREEN_SIZE_X; x += SCREEN_CELL_SIZE )
+        {
+            STaskData data( camera, scene, buffer.get(), x, y );
+            threadPool.Add( &ThreadFunc, data );
+        }
+    */
+    threadPool.WaitAllDone();
+    
+    
+    
+    /*
     // Render
     //MakeTestGradient( buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
     const float fullX = static_cast< float >( SCREEN_SIZE_X - 1 );
@@ -132,8 +205,7 @@ int main(int argc, const char * argv[])
         {
             const float u = static_cast< float >( x ) / fullX;
             const float v = static_cast< float >( y ) / fullY;
-            const Vec3 dir = lowerLeftCorner + u * screenVecX + v * screenVecY;
-            const NRayTrace::SRay ray( camPos, dir );
+            const NRayTrace::SRay ray = camera.GetRay( u, v );
             const SColor col = GetSceneColor( ray, scene );
             
             const int offset = ( y * SCREEN_SIZE_X + x ) * 3;
@@ -141,6 +213,9 @@ int main(int argc, const char * argv[])
             buffer.get()[offset+1] = col.GetByteG();
             buffer.get()[offset+2] = col.GetByteB();
         }
+    threadPool.WaitAllDone();
+    */
+    
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float, std::milli> duration = t2 - t1;
     std::cout << "Buffer created for " << duration.count() << " ms" << std::endl;

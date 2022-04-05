@@ -11,6 +11,8 @@
 		FC63809A27FA0D1800C0825B /* Vec3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC63809827FA0D1800C0825B /* Vec3.cpp */; };
 		FC6380AE27FA431D00C0825B /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC6380AD27FA431D00C0825B /* Sphere.cpp */; };
 		FCDE5A7C27FB469900E46455 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A7B27FB469900E46455 /* Color.cpp */; };
+		FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8327FB805B00E46455 /* ThreadPool.cpp */; };
+		FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8727FB821200E46455 /* Camera.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +39,10 @@
 		FC6380B027FA43F600C0825B /* Hitable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hitable.h; sourceTree = "<group>"; };
 		FCDE5A7527FB451E00E46455 /* Color.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Color.h; sourceTree = "<group>"; };
 		FCDE5A7B27FB469900E46455 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
+		FCDE5A8327FB805B00E46455 /* ThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThreadPool.cpp; sourceTree = "<group>"; };
+		FCDE5A8427FB805B00E46455 /* ThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadPool.h; sourceTree = "<group>"; };
+		FCDE5A8727FB821200E46455 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		FCDE5A8827FB821200E46455 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +86,8 @@
 		FC63809627FA0D1800C0825B /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5A8327FB805B00E46455 /* ThreadPool.cpp */,
+				FCDE5A8427FB805B00E46455 /* ThreadPool.h */,
 				FCDE5A7B27FB469900E46455 /* Color.cpp */,
 				FCDE5A7527FB451E00E46455 /* Color.h */,
 				FC63809D27FA0F2B00C0825B /* Assert.h */,
@@ -92,6 +100,8 @@
 		FC6380A627FA41EE00C0825B /* RayTrace */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5A8727FB821200E46455 /* Camera.cpp */,
+				FCDE5A8827FB821200E46455 /* Camera.h */,
 				FC6380B027FA43F600C0825B /* Hitable.h */,
 				FC6380AD27FA431D00C0825B /* Sphere.cpp */,
 				FC6380AC27FA431D00C0825B /* Sphere.h */,
@@ -160,6 +170,8 @@
 				FCDE5A7C27FB469900E46455 /* Color.cpp in Sources */,
 				FC6380AE27FA431D00C0825B /* Sphere.cpp in Sources */,
 				FC63808E27F7472C00C0825B /* main.cpp in Sources */,
+				FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */,
+				FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
