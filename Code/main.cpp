@@ -16,6 +16,7 @@
 #include "../Code/Core/Assert.h"
 #include "../Code/Core/Color.h"
 #include "../Code/Core/ThreadPool.h"
+#include "../Code/Core/Rand.h"
 
 #include "../Code/RayTrace/Sphere.h"
 #include "../Code/RayTrace/Ray.h"
@@ -95,6 +96,23 @@ static void WriteToPPM( const char *pFilename, const uint8_t *pBuffer, const int
     ofs.close();
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+Vec3 GetRandomointNearby( const Vec3& pos, const float radSqr )
+{
+    int watchDog = 20;
+    while( watchDog > 0 )
+    {
+        const Vec3 randPos( NCore::GetDispersion(), NCore::GetDispersion(), NCore::GetDispersion() );
+        const float dot = Dot( randPos, randPos );
+        if( dot <= radSqr )
+            return randPos;
+        
+        --watchDog;
+    }
+    BREAK( "Increase watch dog value" );
+    
+    return pos;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 SColor GetSceneColor( const NRayTrace::SRay& ray, const std::vector< const NRayTrace::IHitable* >& scene )
 {
     NRayTrace::SHitInfo workInfo;
@@ -113,8 +131,18 @@ SColor GetSceneColor( const NRayTrace::SRay& ray, const std::vector< const NRayT
     
     if( bWasFoundAnything )
     {
-        const Vec3 norCol = trueInfo.nor * 0.5f + 0.5f;
-        return SColor( norCol.x, norCol.y, norCol.z, 1.0f );
+        // Find a point in nearby of hit position
+        const Vec3 rndPosNearby = GetRandomointNearby( trueInfo.pos + trueInfo.nor, 1.0f );
+        const Vec3 dirAO = ( rndPosNearby - trueInfo.pos ).Normalized();\
+        const Vec3 posAO = trueInfo.pos + dirAO * 0.01f;
+        const NRayTrace::SRay rayAO( posAO, dirAO );
+        const SColor rndCol = 0.5f * GetSceneColor( rayAO, scene );
+        return rndCol;
+        
+        //const Vec3 norCol = trueInfo.nor * 0.5f + 0.5f;
+        //return SColor( norCol.x, norCol.y, norCol.z, 1.0f );
+        
+        //return SColor( 1.0f, 1.0f, 1.0f, 1.0f );
     }
     
     return SColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -149,7 +177,8 @@ static void ThreadFunc( const size_t threadID, STaskData data )
 int main(int argc, const char * argv[])
 {
     // Thread pool
-    NCore::CThreadPool threadPool( std::thread::hardware_concurrency() );
+    //NCore::CThreadPool threadPool( std::thread::hardware_concurrency() );
+    NCore::CThreadPool threadPool( 1 );
     
     // Buffer
     std::unique_ptr< uint8_t[] >buffer( new uint8_t[SCREEN_SIZE_X * SCREEN_SIZE_Y * 3] );

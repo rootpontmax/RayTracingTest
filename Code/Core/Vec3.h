@@ -20,6 +20,7 @@ struct Vec3
     Vec3    operator-() const;
     float   Length() const;
     float   LengthSqr() const;
+    Vec3    Normalized() const;
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 Vec3 operator*( const Vec3& lhs, float rhs );

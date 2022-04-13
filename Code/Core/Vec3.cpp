@@ -72,6 +72,13 @@ float Vec3::LengthSqr() const
     return product;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+Vec3 Vec3::Normalized() const
+{
+    const float l = Length();
+    return Vec3( x / l, y / l, z / l );
+    
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
 Vec3 operator*( const Vec3& lhs, float rhs )
 {
     return Vec3( lhs.x * rhs, lhs.y * rhs, lhs.z * rhs );
