@@ -14,6 +14,8 @@
 		FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8327FB805B00E46455 /* ThreadPool.cpp */; };
 		FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8727FB821200E46455 /* Camera.cpp */; };
 		FCDE5A8D27FE388900E46455 /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8C27FE388900E46455 /* Rand.cpp */; };
+		FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A9028087C7700E46455 /* OCLTracer.cpp */; };
+		FCDE5A9728088B8D00E46455 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE5A9628088B8D00E46455 /* OpenCL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,6 +48,10 @@
 		FCDE5A8827FB821200E46455 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
 		FCDE5A8B27FE388800E46455 /* Rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rand.h; sourceTree = "<group>"; };
 		FCDE5A8C27FE388900E46455 /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
+		FCDE5A8F28087C7700E46455 /* OCLTracer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLTracer.h; sourceTree = "<group>"; };
+		FCDE5A9028087C7700E46455 /* OCLTracer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLTracer.cpp; sourceTree = "<group>"; };
+		FCDE5A932808869600E46455 /* OCLDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLDefs.h; sourceTree = "<group>"; };
+		FCDE5A9628088B8D00E46455 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCDE5A9728088B8D00E46455 /* OpenCL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +71,7 @@
 			children = (
 				FC63808C27F7472C00C0825B /* Code */,
 				FC63808027F7468B00C0825B /* Products */,
+				FCDE5A9528088B8D00E46455 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -89,6 +97,7 @@
 		FC63809627FA0D1800C0825B /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5A932808869600E46455 /* OCLDefs.h */,
 				FCDE5A8C27FE388900E46455 /* Rand.cpp */,
 				FCDE5A8B27FE388800E46455 /* Rand.h */,
 				FCDE5A8327FB805B00E46455 /* ThreadPool.cpp */,
@@ -105,6 +114,8 @@
 		FC6380A627FA41EE00C0825B /* RayTrace */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5A9028087C7700E46455 /* OCLTracer.cpp */,
+				FCDE5A8F28087C7700E46455 /* OCLTracer.h */,
 				FCDE5A8727FB821200E46455 /* Camera.cpp */,
 				FCDE5A8827FB821200E46455 /* Camera.h */,
 				FC6380B027FA43F600C0825B /* Hitable.h */,
@@ -113,6 +124,14 @@
 				FC6380A827FA41EE00C0825B /* Ray.h */,
 			);
 			path = RayTrace;
+			sourceTree = "<group>";
+		};
+		FCDE5A9528088B8D00E46455 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FCDE5A9628088B8D00E46455 /* OpenCL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -176,6 +195,7 @@
 				FC6380AE27FA431D00C0825B /* Sphere.cpp in Sources */,
 				FC63808E27F7472C00C0825B /* main.cpp in Sources */,
 				FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */,
+				FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */,
 				FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */,
 				FCDE5A8D27FE388900E46455 /* Rand.cpp in Sources */,
 			);

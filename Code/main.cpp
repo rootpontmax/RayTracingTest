@@ -21,6 +21,8 @@
 #include "../Code/RayTrace/Sphere.h"
 #include "../Code/RayTrace/Ray.h"
 #include "../Code/RayTrace/Camera.h"
+#include "../Code/RayTrace/OCLTracer.h"
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static const int SCREEN_CELL_SIZE = 64;
@@ -131,16 +133,19 @@ SColor GetSceneColor( const NRayTrace::SRay& ray, const std::vector< const NRayT
     
     if( bWasFoundAnything )
     {
+        /*
         // Find a point in nearby of hit position
         const Vec3 rndPosNearby = GetRandomointNearby( trueInfo.pos + trueInfo.nor, 1.0f );
         const Vec3 dirAO = ( rndPosNearby - trueInfo.pos ).Normalized();\
         const Vec3 posAO = trueInfo.pos + dirAO * 0.01f;
         const NRayTrace::SRay rayAO( posAO, dirAO );
-        const SColor rndCol = 0.5f * GetSceneColor( rayAO, scene );
+        const SColor curCol( 1.0f, 1.0f, 1.0f, 1.0f );
+        const SColor rndCol = curCol + 0.1f * GetSceneColor( rayAO, scene );
         return rndCol;
+        */
         
-        //const Vec3 norCol = trueInfo.nor * 0.5f + 0.5f;
-        //return SColor( norCol.x, norCol.y, norCol.z, 1.0f );
+        const Vec3 norCol = trueInfo.nor * 0.5f + 0.5f;
+        return SColor( norCol.x, norCol.y, norCol.z, 1.0f );
         
         //return SColor( 1.0f, 1.0f, 1.0f, 1.0f );
     }
@@ -176,9 +181,15 @@ static void ThreadFunc( const size_t threadID, STaskData data )
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, const char * argv[])
 {
+    // Tracer
+    NRayTrace::COCLTracer tracer;
+    
+    
     // Thread pool
-    //NCore::CThreadPool threadPool( std::thread::hardware_concurrency() );
-    NCore::CThreadPool threadPool( 1 );
+    const size_t threadCount = std::thread::hardware_concurrency();
+    std::cout << "Threads count: " << threadCount << std::endl;
+    //NCore::CThreadPool threadPool(  );
+    NCore::CThreadPool threadPool( threadCount );
     
     // Buffer
     std::unique_ptr< uint8_t[] >buffer( new uint8_t[SCREEN_SIZE_X * SCREEN_SIZE_Y * 3] );
