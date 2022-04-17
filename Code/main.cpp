@@ -14,6 +14,7 @@
 
 
 #include "../Code/Core/Assert.h"
+#include "../Code/Core/FileSystem.h"
 #include "../Code/Core/Color.h"
 #include "../Code/Core/ThreadPool.h"
 #include "../Code/Core/Rand.h"
@@ -181,8 +182,9 @@ static void ThreadFunc( const size_t threadID, STaskData data )
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, const char * argv[])
 {
+    NCore::FileSystem().Init();
     // Tracer
-    NRayTrace::COCLTracer tracer;
+    NRayTrace::COCLTracer tracer( SCREEN_SIZE_X, SCREEN_SIZE_Y );
     
     
     // Thread pool

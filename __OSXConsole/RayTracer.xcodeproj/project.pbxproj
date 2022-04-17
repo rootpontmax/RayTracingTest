@@ -16,6 +16,7 @@
 		FCDE5A8D27FE388900E46455 /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A8C27FE388900E46455 /* Rand.cpp */; };
 		FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A9028087C7700E46455 /* OCLTracer.cpp */; };
 		FCDE5A9728088B8D00E46455 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE5A9628088B8D00E46455 /* OpenCL.framework */; };
+		FCDE5A9B280CB64700E46455 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A99280CB64700E46455 /* FileSystem.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -52,6 +53,9 @@
 		FCDE5A9028087C7700E46455 /* OCLTracer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCLTracer.cpp; sourceTree = "<group>"; };
 		FCDE5A932808869600E46455 /* OCLDefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCLDefs.h; sourceTree = "<group>"; };
 		FCDE5A9628088B8D00E46455 /* OpenCL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenCL.framework; path = System/Library/Frameworks/OpenCL.framework; sourceTree = SDKROOT; };
+		FCDE5A99280CB64700E46455 /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystem.cpp; sourceTree = "<group>"; };
+		FCDE5A9A280CB64700E46455 /* FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystem.h; sourceTree = "<group>"; };
+		FCDE5AA9280CB8B700E46455 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,9 @@
 		FC63809627FA0D1800C0825B /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5AA9280CB8B700E46455 /* Platform.h */,
+				FCDE5A99280CB64700E46455 /* FileSystem.cpp */,
+				FCDE5A9A280CB64700E46455 /* FileSystem.h */,
 				FCDE5A932808869600E46455 /* OCLDefs.h */,
 				FCDE5A8C27FE388900E46455 /* Rand.cpp */,
 				FCDE5A8B27FE388800E46455 /* Rand.h */,
@@ -194,6 +201,7 @@
 				FCDE5A7C27FB469900E46455 /* Color.cpp in Sources */,
 				FC6380AE27FA431D00C0825B /* Sphere.cpp in Sources */,
 				FC63808E27F7472C00C0825B /* main.cpp in Sources */,
+				FCDE5A9B280CB64700E46455 /* FileSystem.cpp in Sources */,
 				FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */,
 				FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */,
 				FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */,
@@ -321,6 +329,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_CFLAGS = "-DSOURCE_ROOT_PATH=\"\\\"$(SOURCE_ROOT)\\\"\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -331,6 +340,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				OTHER_CFLAGS = "-DSOURCE_ROOT_PATH=\"\\\"$(SOURCE_ROOT)\\\"\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
