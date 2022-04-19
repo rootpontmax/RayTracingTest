@@ -17,6 +17,9 @@
 		FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A9028087C7700E46455 /* OCLTracer.cpp */; };
 		FCDE5A9728088B8D00E46455 /* OpenCL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDE5A9628088B8D00E46455 /* OpenCL.framework */; };
 		FCDE5A9B280CB64700E46455 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5A99280CB64700E46455 /* FileSystem.cpp */; };
+		FCDE5AAE280DC3B000E46455 /* File.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5AAC280DC3B000E46455 /* File.cpp */; };
+		FCDE5AB2280F228200E46455 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5AB0280F228200E46455 /* Timer.cpp */; };
+		FCDE5AB6280F2C4800E46455 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FCDE5AB5280F2C4800E46455 /* Scene.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +59,12 @@
 		FCDE5A99280CB64700E46455 /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystem.cpp; sourceTree = "<group>"; };
 		FCDE5A9A280CB64700E46455 /* FileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileSystem.h; sourceTree = "<group>"; };
 		FCDE5AA9280CB8B700E46455 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
+		FCDE5AAC280DC3B000E46455 /* File.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = File.cpp; sourceTree = "<group>"; };
+		FCDE5AAD280DC3B000E46455 /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
+		FCDE5AB0280F228200E46455 /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timer.cpp; sourceTree = "<group>"; };
+		FCDE5AB1280F228200E46455 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		FCDE5AB4280F2C4800E46455 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		FCDE5AB5280F2C4800E46455 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,9 +99,9 @@
 		FC63808C27F7472C00C0825B /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				FC6380A627FA41EE00C0825B /* RayTrace */,
 				FC63809627FA0D1800C0825B /* Core */,
 				FC63808D27F7472C00C0825B /* main.cpp */,
+				FC6380A627FA41EE00C0825B /* RayTrace */,
 			);
 			name = Code;
 			path = ../Code;
@@ -101,6 +110,10 @@
 		FC63809627FA0D1800C0825B /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5AB0280F228200E46455 /* Timer.cpp */,
+				FCDE5AB1280F228200E46455 /* Timer.h */,
+				FCDE5AAC280DC3B000E46455 /* File.cpp */,
+				FCDE5AAD280DC3B000E46455 /* File.h */,
 				FCDE5AA9280CB8B700E46455 /* Platform.h */,
 				FCDE5A99280CB64700E46455 /* FileSystem.cpp */,
 				FCDE5A9A280CB64700E46455 /* FileSystem.h */,
@@ -121,6 +134,8 @@
 		FC6380A627FA41EE00C0825B /* RayTrace */ = {
 			isa = PBXGroup;
 			children = (
+				FCDE5AB5280F2C4800E46455 /* Scene.cpp */,
+				FCDE5AB4280F2C4800E46455 /* Scene.h */,
 				FCDE5A9028087C7700E46455 /* OCLTracer.cpp */,
 				FCDE5A8F28087C7700E46455 /* OCLTracer.h */,
 				FCDE5A8727FB821200E46455 /* Camera.cpp */,
@@ -197,15 +212,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCDE5AB6280F2C4800E46455 /* Scene.cpp in Sources */,
 				FC63809A27FA0D1800C0825B /* Vec3.cpp in Sources */,
 				FCDE5A7C27FB469900E46455 /* Color.cpp in Sources */,
 				FC6380AE27FA431D00C0825B /* Sphere.cpp in Sources */,
 				FC63808E27F7472C00C0825B /* main.cpp in Sources */,
 				FCDE5A9B280CB64700E46455 /* FileSystem.cpp in Sources */,
+				FCDE5AB2280F228200E46455 /* Timer.cpp in Sources */,
 				FCDE5A8927FB821200E46455 /* Camera.cpp in Sources */,
 				FCDE5A9128087C7700E46455 /* OCLTracer.cpp in Sources */,
 				FCDE5A8527FB805B00E46455 /* ThreadPool.cpp in Sources */,
 				FCDE5A8D27FE388900E46455 /* Rand.cpp in Sources */,
+				FCDE5AAE280DC3B000E46455 /* File.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

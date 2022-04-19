@@ -10,20 +10,19 @@
 #include <fstream>
 #include <vector>
 #include <cfloat>
-#include <chrono>
-
 
 #include "../Code/Core/Assert.h"
 #include "../Code/Core/FileSystem.h"
 #include "../Code/Core/Color.h"
 #include "../Code/Core/ThreadPool.h"
 #include "../Code/Core/Rand.h"
+#include "../Code/Core/Timer.h"
 
 #include "../Code/RayTrace/Sphere.h"
 #include "../Code/RayTrace/Ray.h"
 #include "../Code/RayTrace/Camera.h"
+#include "../Code/RayTrace/Scene.h"
 #include "../Code/RayTrace/OCLTracer.h"
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 static const int SCREEN_CELL_SIZE = 64;
@@ -32,11 +31,11 @@ static const int SCREEN_SIZE_Y = 480;
 static const int SCREEN_CELL_COUNT_X = SCREEN_SIZE_X / SCREEN_CELL_SIZE;
 static const int SCREEN_CELL_COUNT_Y = SCREEN_SIZE_Y / SCREEN_CELL_SIZE;
 static const float SCREEN_ASPECT = static_cast< float >( SCREEN_SIZE_X ) / static_cast< float >( SCREEN_SIZE_Y );
-typedef std::vector< const NRayTrace::IHitable* > TScene;
+//typedef std::vector< const NRayTrace::IHitable* > TScene;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 struct STaskData
 {
-    STaskData( const NRayTrace::CCamera& cam, const TScene& scn, uint8_t *pBuf, int x, int y ) :
+    STaskData( const NRayTrace::CCamera& cam, const NRayTrace::CScene& scn, uint8_t *pBuf, int x, int y ) :
         camera( cam ),
         scene( scn ),
         pBuffer( pBuf ),
@@ -45,7 +44,7 @@ struct STaskData
     {}
     
     const NRayTrace::CCamera& camera;
-    const TScene& scene;
+    const NRayTrace::CScene& scene;
     uint8_t* const pBuffer;
     const int startX;
     const int startY;
@@ -90,9 +89,9 @@ static void WriteToPPM( const char *pFilename, const uint8_t *pBuffer, const int
         for( int x = 0; x < sizeX; ++x )
         {
             const int offset = ( y * sizeX + x ) * 3;
-            const int r = pBuffer[offset];
-            const int g = pBuffer[offset+1];
-            const int b = pBuffer[offset+2];
+            const int r = pBuffer[offset    ];
+            const int g = pBuffer[offset + 1];
+            const int b = pBuffer[offset + 2];
             ofs << r << " " << g << " " << b << std::endl;
         }
     
@@ -116,15 +115,15 @@ Vec3 GetRandomointNearby( const Vec3& pos, const float radSqr )
     return pos;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-SColor GetSceneColor( const NRayTrace::SRay& ray, const std::vector< const NRayTrace::IHitable* >& scene )
+SColor GetSceneColor( const NRayTrace::SRay& ray, const NRayTrace::CScene& scene )
 {
     NRayTrace::SHitInfo workInfo;
     NRayTrace::SHitInfo trueInfo;
     float minT = FLT_MAX;
     bool bWasFoundAnything = false;
-    for( size_t i = 0; i < scene.size(); ++i )
+    for( size_t i = 0; i < scene.GetHitables().size(); ++i )
     {
-        if( scene[i]->HasHit( &workInfo, ray, 0.0f, 100.0f ) && workInfo.t < minT )
+        if( scene.GetHitables()[i]->HasHit( &workInfo, ray, 0.0f, 100.0f ) && workInfo.t < minT )
         {
             trueInfo = workInfo;
             minT = workInfo.t;
@@ -183,14 +182,15 @@ static void ThreadFunc( const size_t threadID, STaskData data )
 int main(int argc, const char * argv[])
 {
     NCore::FileSystem().Init();
+    const std::string pathCPU = NCore::FileSystem().GetResourceFileName( "Output/RayTestCPU.ppm" );
+    const std::string pathGPU = NCore::FileSystem().GetResourceFileName( "Output/RayTestGPU.ppm" );
+    
     // Tracer
     NRayTrace::COCLTracer tracer( SCREEN_SIZE_X, SCREEN_SIZE_Y );
-    
     
     // Thread pool
     const size_t threadCount = std::thread::hardware_concurrency();
     std::cout << "Threads count: " << threadCount << std::endl;
-    //NCore::CThreadPool threadPool(  );
     NCore::CThreadPool threadPool( threadCount );
     
     // Buffer
@@ -199,10 +199,9 @@ int main(int argc, const char * argv[])
     // Scene
     NRayTrace::CSphere sphereA( Vec3( 0.0f, 0.0f, -1.0f ), 0.5f );
     NRayTrace::CSphere sphereB( Vec3( 0.0f, -100.5f, -1.0f ), 100.0f );
-    std::vector< const NRayTrace::IHitable* > scene;
-    scene.reserve(2);
-    scene.push_back( &sphereA );
-    scene.push_back( &sphereB );
+    NRayTrace::CScene scene;
+    scene.AddSphere( &sphereA );
+    scene.AddSphere( &sphereB );
     
     // Camera
     NRayTrace::CCamera camera( SCREEN_ASPECT, 1.0f );
@@ -218,54 +217,47 @@ int main(int argc, const char * argv[])
             datas.emplace_back( data );
         }
     
-    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    NCore::CTimer timerCPU;
+    timerCPU.Start();
     for( int i = 0; i < cellCount; ++i )
         threadPool.Add( &ThreadFunc, datas[i] );
-    /*
-    for( int y = ( SCREEN_SIZE_Y - 1 ); y >= 0; y -= SCREEN_CELL_SIZE )
-        for( int x = 0; x < SCREEN_SIZE_X; x += SCREEN_CELL_SIZE )
-        {
-            STaskData data( camera, scene, buffer.get(), x, y );
-            threadPool.Add( &ThreadFunc, data );
-        }
-    */
     threadPool.WaitAllDone();
+    timerCPU.Stop();
     
     
     
-    /*
-    // Render
-    //MakeTestGradient( buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
-    const float fullX = static_cast< float >( SCREEN_SIZE_X - 1 );
-    const float fullY = static_cast< float >( SCREEN_SIZE_Y - 1 );
+    //std::cout << "Write CPU output file" << std::endl;
     
-    std::cout << "Creating image\n";
-    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    //std::cout << pathCPU << std::endl;
+    //std::cout << pathGPU << std::endl;
     
-    for( int y = ( SCREEN_SIZE_Y - 1 ); y >= 0; --y )
-        for( int x = 0; x < SCREEN_SIZE_X; ++x )
-        {
-            const float u = static_cast< float >( x ) / fullX;
-            const float v = static_cast< float >( y ) / fullY;
-            const NRayTrace::SRay ray = camera.GetRay( u, v );
-            const SColor col = GetSceneColor( ray, scene );
-            
-            const int offset = ( y * SCREEN_SIZE_X + x ) * 3;
-            buffer.get()[offset  ] = col.GetByteR();
-            buffer.get()[offset+1] = col.GetByteG();
-            buffer.get()[offset+2] = col.GetByteB();
-        }
-    threadPool.WaitAllDone();
-    */
     
-    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float, std::milli> duration = t2 - t1;
-    std::cout << "Buffer created for " << duration.count() << " ms" << std::endl;
+    std::cout << "Writing CPU data..." << std::endl;
+    WriteToPPM( pathCPU.c_str(), buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
     
-    WriteToPPM( "RayTest.ppm", buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
+    MakeTestGradient( buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
+    
+    NCore::CTimer timerGPUAll;
+    NCore::CTimer timerGPUTrace;
+    timerGPUAll.Start();
+    tracer.SetData( camera, scene );
+    
+    timerGPUTrace.Start();
+    tracer.Trace();
+    timerGPUTrace.Stop();
+    
+    tracer.GetBuffer( buffer.get() );
+    timerGPUAll.Stop();
+    
+    
+    std::cout << "Writing GPU data..." << std::endl;
+    WriteToPPM( pathGPU.c_str(), buffer.get(), SCREEN_SIZE_X, SCREEN_SIZE_Y );
     
     
     std::cout << "Done!\n";
+    std::cout << "RayTrace on CPU time         " << timerCPU.GetMS() << " ms" << std::endl;
+    std::cout << "RayTrace on GPU time (all)   " << timerGPUAll.GetMS() << " ms" << std::endl;
+    std::cout << "RayTrace on GPU time (trace) " << timerGPUTrace.GetMS() << " ms" << std::endl;
     
     return 0;
 }

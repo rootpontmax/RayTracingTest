@@ -1,0 +1,26 @@
+#include "Timer.h"
+#include "Assert.h"
+
+namespace NCore
+{
+////////////////////////////////////////////////////////////////////////////////////////////////////
+CTimer::CTimer() :
+    m_bIsWorking( false )
+{}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void CTimer::Start()
+{
+    ASSERT( !m_bIsWorking, "You can't start timer because it has already started" );
+    m_bIsWorking = true;
+    m_timePointA = std::chrono::high_resolution_clock::now();
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void CTimer::Stop()
+{
+    ASSERT( m_bIsWorking, "You can't stop timer that hasn't started before" );
+    m_timePointB = std::chrono::high_resolution_clock::now();
+    m_durationMS = m_timePointB - m_timePointA;
+    m_bIsWorking = false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+} // end of namespace

@@ -15,6 +15,9 @@ public:
         m_radSqr( rad * rad )
     {}
     
+    const Vec3& GetPos() const { return m_pos; }
+    float       GetRad() const { return m_rad; }
+    
     // IHitable
     bool HasHit( SHitInfo *pInfo, const SRay& ray, const float tMin, const float tMax ) const override;
     

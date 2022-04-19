@@ -88,7 +88,7 @@ void CFileSystem::Init()
     }
     
     
-    std::cout << "Full path: " << SOURCE_ROOT_PATH << std::endl;
+    //std::cout << "Full path: " << SOURCE_ROOT_PATH << std::endl;
     
     devBuffer[ slashPos + 1 ] = 'B';
     devBuffer[ slashPos + 2 ] = 'i';
@@ -115,12 +115,9 @@ void CFileSystem::Init()
     m_cachePath = m_resourcePath + cacheFolder;
 #endif
 
-    std::cout << "Resource path: " << m_resourcePath << std::endl;
-    std::cout << "Document path: " << m_documentPath << std::endl;
-    std::cout << "Cache path: " << m_cachePath << std::endl;
-    //LOG_CONSOLE( L"\nResource path: %S\n", m_resourcePath.c_str() );
-    //LOG_CONSOLE( L"Document path: %S\n", m_documentPath.c_str() );
-    //LOG_CONSOLE( L"Cache path   : %S\n\n", m_cachePath.c_str() );
+    //std::cout << "Resource path: " << m_resourcePath << std::endl;
+    //std::cout << "Document path: " << m_documentPath << std::endl;
+    //std::cout << "Cache path: " << m_cachePath << std::endl;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string CFileSystem::GetResourceFileName( const char *pFileName ) const
