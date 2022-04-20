@@ -37,6 +37,7 @@ private:
     cl_mem              m_rayPosDirBuffer;
     cl_mem              m_outColBuffer;
     cl_mem              m_sceneSphereBuffer;
+    size_t              m_sceneSphereCount;
     
     // Buffers
     std::unique_ptr< cl_float8 >    m_rayPosDirArray;

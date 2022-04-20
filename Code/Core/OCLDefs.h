@@ -29,6 +29,10 @@ static void ShowErrorOpenCL( cl_int errorCode )
             BREAK( "CL_DEVICE_NOT_FOUND" );
             break;
             
+        case CL_INVALID_ARG_INDEX:
+            BREAK( "CL_INVALID_ARG_INDEX" );
+            break;
+            
         case CL_INVALID_BINARY:
             BREAK( "CL_INVALID_BINARY" );
             break;

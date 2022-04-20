@@ -27,7 +27,8 @@ COCLTracer::COCLTracer( const int sizeX, const int sizeY ) :
     m_kernel( nullptr ),
     m_rayPosDirBuffer( nullptr ),
     m_outColBuffer( nullptr ),
-    m_sceneSphereBuffer( nullptr )
+    m_sceneSphereBuffer( nullptr ),
+    m_sceneSphereCount( 0 )
 {
     // Platform
     cl_platform_id platformID = nullptr;
@@ -77,15 +78,17 @@ void COCLTracer::SetData( const CCamera& camera, const CScene& scene )
             const float v = static_cast< float >( y ) / m_fullY;
             const NRayTrace::SRay ray = camera.GetRay( u, v );
             
+            const Vec3 dir = ray.dir.Normalized();
+            
             pPosDir[offset].s0 = ray.pos.x;
             pPosDir[offset].s1 = ray.pos.y;
             pPosDir[offset].s2 = ray.pos.z;
-            pPosDir[offset].s3 = 1.0f;
+            pPosDir[offset].s3 = 0.0f;
             
-            pPosDir[offset].s4 = ray.dir.x;
-            pPosDir[offset].s5 = 0.0f;//ray.dir.y;
-            pPosDir[offset].s6 = 0.0f;//ray.dir.z;
-            pPosDir[offset].s7 = 1.0f;
+            pPosDir[offset].s4 = dir.x;
+            pPosDir[offset].s5 = dir.y;
+            pPosDir[offset].s6 = dir.z;
+            pPosDir[offset].s7 = 0.0f;
         }
     
     // Scene
@@ -103,11 +106,13 @@ void COCLTracer::SetData( const CCamera& camera, const CScene& scene )
     // Write data to cl_mem
     OCL_ASSERT( clEnqueueWriteBuffer( m_queue, m_rayPosDirBuffer, CL_TRUE, 0, sizeof( cl_float8 ) * m_bufferSize, pPosDir, 0, nullptr, nullptr ) );
     OCL_ASSERT( clEnqueueWriteBuffer( m_queue, m_sceneSphereBuffer, CL_TRUE, 0, sizeof( cl_float4 ) * scene.GetSpheres().size(), pSphere, 0, nullptr, nullptr ) );
+    m_sceneSphereCount = scene.GetSpheres().size();
     
     // Transfer data to OpenCL
     OCL_ASSERT( clSetKernelArg( m_kernel, 0, sizeof( cl_mem ), (void*)&m_rayPosDirBuffer ) );
     OCL_ASSERT( clSetKernelArg( m_kernel, 1, sizeof( cl_mem ), (void*)&m_sceneSphereBuffer ) );
     OCL_ASSERT( clSetKernelArg( m_kernel, 2, sizeof( cl_mem ), (void*)&m_outColBuffer ) );
+    OCL_ASSERT( clSetKernelArg( m_kernel, 3, sizeof( size_t ), (void*)&m_sceneSphereCount ) );
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void COCLTracer::Trace()

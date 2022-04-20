@@ -200,8 +200,8 @@ int main(int argc, const char * argv[])
     NRayTrace::CSphere sphereA( Vec3( 0.0f, 0.0f, -1.0f ), 0.5f );
     NRayTrace::CSphere sphereB( Vec3( 0.0f, -100.5f, -1.0f ), 100.0f );
     NRayTrace::CScene scene;
-    scene.AddSphere( &sphereA );
     scene.AddSphere( &sphereB );
+    scene.AddSphere( &sphereA );
     
     // Camera
     NRayTrace::CCamera camera( SCREEN_ASPECT, 1.0f );
